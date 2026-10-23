@@ -70,6 +70,7 @@ Claude in Chrome não precisa disso: funciona a partir de qualquer conta. O camp
 
 ## Diagnóstico
 - **Digitar o atalho no Explorer abre uma pasta em vez do Claude:** existe uma pasta com esse nome (o Explorer navega antes de executar). Troque `atalhoExplorer`. `instalar.ps1 -Verificar` procura esses conflitos.
+- **Atalho do Explorer dá "Não é possível localizar o tipo [W.U]":** o `Add-Type` falhou porque `TMP` aponta para `C:\Windows\TEMP` (falta `TMP` no ambiente do usuário). Desde a 1.3.1 o `claude-aqui.ps1` corrige isso na própria sessão; se ainda acontecer, reinstale os scripts. Para corrigir no Windows, crie `TMP` do usuário igual ao `TEMP` (`%USERPROFILE%\AppData\Local\Temp`).
 - **"cc não é reconhecido":** o terminal foi aberto antes da instalação. Abra outro.
 - **Aviso "logada como X, esperado Y":** o `/login` foi feito com o e-mail errado naquela pasta. Rode `/logout` e `/login` dentro de `cc <conta>`.
 - **Mensagem "alteração levada para a mestre":** um programa salvou por cima de um link e o `cc` refez o link. O conteúdo anterior fica em `~/.claude-contas/backups`.

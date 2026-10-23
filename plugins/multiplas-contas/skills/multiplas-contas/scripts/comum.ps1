@@ -195,6 +195,21 @@ function Clear-AmbienteSessaoPai([string[]]$persistentes = @(Get-NomesClaudePers
     }
 }
 
+# Sem TMP no ambiente do usuario, o Windows herda o da maquina (C:\Windows\TEMP). Ali o compilador
+# do Add-Type grava o .cs e nao consegue le-lo de volta ("arquivo de origem nao pode ser encontrado").
+# Aponta TMP e TEMP desta sessao para a temp do usuario quando estao vazias ou dentro da pasta do
+# Windows. Nao mexe no ambiente salvo do usuario. Devolve os nomes trocados.
+function Repair-TempSessao([string]$pastaWindows = $env:windir, [string]$tempUsuario = (Join-Path $env:LOCALAPPDATA 'Temp')) {
+    $prefixo = $pastaWindows.TrimEnd('\') + '\'
+    foreach ($nome in 'TMP', 'TEMP') {
+        $valor = [Environment]::GetEnvironmentVariable($nome)
+        if (-not $valor -or ($valor.TrimEnd('\') + '\').StartsWith($prefixo, [StringComparison]::OrdinalIgnoreCase)) {
+            Set-Item "Env:$nome" $tempUsuario
+            $nome
+        }
+    }
+}
+
 function Get-StatusConta($conta) {
     Invoke-ComConta $conta { & $Claude auth status --json 2>$null | ConvertFrom-Json }
 }

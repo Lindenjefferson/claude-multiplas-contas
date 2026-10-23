@@ -43,4 +43,40 @@ Describe 'Clear-AmbienteSessaoPai' {
     }
 }
 
+Describe 'Repair-TempSessao' {
+    It 'troca TMP e TEMP que apontam para a pasta do Windows pela temp do usuario' {
+        $tmp, $temp = $env:TMP, $env:TEMP
+        try {
+            $env:TMP = 'C:\Windows\TEMP'
+            $env:TEMP = 'c:\windows\temp\'
+            $trocadas = Repair-TempSessao 'C:\Windows' 'C:\Users\x\AppData\Local\Temp'
+            $env:TMP | Should Be 'C:\Users\x\AppData\Local\Temp'
+            $env:TEMP | Should Be 'C:\Users\x\AppData\Local\Temp'
+            ($trocadas -join ',') | Should Be 'TMP,TEMP'
+        } finally { $env:TMP, $env:TEMP = $tmp, $temp }
+    }
+
+    It 'preenche a que estiver vazia e mantem a que ja aponta para outro lugar' {
+        $tmp, $temp = $env:TMP, $env:TEMP
+        try {
+            Remove-Item Env:TMP -ErrorAction SilentlyContinue
+            $env:TEMP = 'D:\minha-temp'
+            $trocadas = Repair-TempSessao 'C:\Windows' 'C:\Users\x\AppData\Local\Temp'
+            $env:TMP | Should Be 'C:\Users\x\AppData\Local\Temp'
+            $env:TEMP | Should Be 'D:\minha-temp'
+            ($trocadas -join ',') | Should Be 'TMP'
+        } finally { $env:TMP, $env:TEMP = $tmp, $temp }
+    }
+
+    It 'nao confunde pasta com o mesmo prefixo do Windows' {
+        $tmp, $temp = $env:TMP, $env:TEMP
+        try {
+            $env:TMP = 'C:\WindowsApps\temp'
+            $env:TEMP = 'C:\WindowsApps\temp'
+            @(Repair-TempSessao 'C:\Windows' 'C:\Users\x\AppData\Local\Temp').Count | Should Be 0
+            $env:TMP | Should Be 'C:\WindowsApps\temp'
+        } finally { $env:TMP, $env:TEMP = $tmp, $temp }
+    }
+}
+
 Remove-Item -LiteralPath $raiz -Recurse -Force -ErrorAction SilentlyContinue

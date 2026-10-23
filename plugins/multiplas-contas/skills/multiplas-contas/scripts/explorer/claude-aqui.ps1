@@ -1,5 +1,7 @@
 # Chamado por claude-aqui.cmd. O Explorer nao repassa a pasta atual para comandos do App Paths,
 # entao pegamos a pasta da janela do Explorer mais a frente (aba ativa = titulo da janela).
+. (Join-Path $PSScriptRoot '..\comum.ps1')
+$null = Repair-TempSessao
 Add-Type -Namespace W -Name U -MemberDefinition @'
 [DllImport("user32.dll")] public static extern IntPtr GetTopWindow(IntPtr h);
 [DllImport("user32.dll")] public static extern IntPtr GetWindow(IntPtr h, uint cmd);

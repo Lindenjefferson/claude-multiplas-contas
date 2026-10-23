@@ -1,6 +1,6 @@
 {
   "name": "multiplas-contas",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Uma conta principal e quantas secundárias quiser no Claude Code para Windows, alternadas com `cc <conta>` sem relogar (CLAUDE_CONFIG_DIR por conta, resto compartilhado), mais o atalho \"cc\" na barra de endereço do Explorer.",
   "author": {
     "name": "Lindenjefferson"
